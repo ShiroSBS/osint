@@ -1,0 +1,440 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Système de Recherche</title><style>
+:root{--bg:#09090f;--bg2:#111118;--bg3:#16161f;--bg4:#1c1c28;--bd:#252535;--tx:#e2e2f0;--tx2:#8888aa;--tx3:#444460;--bl:#5b6ef5;--bl2:#4457e8;--gn:#22c55e;--rd:#ef4444;--pu:#8b5cf6}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 40% 40%,rgba(91,110,245,.07) 0%,transparent 60%)}
+.lcard{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:40px;width:360px}
+.ltop{text-align:center;margin-bottom:24px}.ltop svg{margin:0 auto 10px;display:block}
+.ltitle{font-size:20px;font-weight:700;margin-bottom:4px}.lsub{font-size:12px;color:var(--tx2);margin-bottom:28px}
+.fg{margin-bottom:14px}.fl{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);margin-bottom:6px}
+.fi{width:100%;background:var(--bg3);border:1px solid var(--bd);border-radius:8px;color:var(--tx);padding:10px 12px;font-size:13px;outline:none;transition:border .15s}
+.fi:focus{border-color:var(--bl)}.fi::placeholder{color:var(--tx3)}
+.bp{width:100%;background:var(--bl);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.bp:hover{background:var(--bl2)}.lerr{color:var(--rd);font-size:12px;text-align:center;margin-top:10px;min-height:18px}
+.demo-hint{margin-top:14px;padding:10px 14px;background:rgba(91,110,245,.08);border:1px solid rgba(91,110,245,.18);border-radius:8px;font-size:11px;color:var(--tx2)}
+#app{display:none;flex-direction:column;min-height:100vh}
+.tb{background:var(--bg2);border-bottom:1px solid var(--bd);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tbl{display:flex;align-items:center;gap:9px}.tbtl{font-size:15px;font-weight:700}
+.tbr{display:flex;align-items:center;gap:8px}
+.bh{background:var(--bg3);border:1px solid var(--bd);color:var(--tx2);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;transition:border .15s}.bh:hover{border-color:var(--bl);color:var(--bl)}
+.bc{background:var(--bg3);border:1px solid var(--bd);color:var(--tx);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}.bc:hover{border-color:var(--tx2)}
+.bs{background:var(--bl);border:none;color:#fff;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;transition:background .15s}.bs:hover{background:var(--bl2)}
+.ub{display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--bg3);border-radius:8px;cursor:pointer;border:1px solid var(--bd);transition:border .15s}.ub:hover{border-color:var(--bl)}
+.ua{width:26px;height:26px;background:var(--bl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.un{font-size:12px;font-weight:600}.ur{font-size:10px;color:var(--tx2)}
+.ntabs{background:var(--bg2);border-bottom:1px solid var(--bd);padding:0 22px;display:flex}
+.nt{padding:10px 14px;font-size:12px;font-weight:500;color:var(--tx2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}.nt.active{color:var(--bl);border-bottom-color:var(--bl)}.nt:hover:not(.active){color:var(--tx)}
+.main{flex:1;padding:20px;max-width:920px;margin:0 auto;width:100%}
+.sec{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.sh{padding:13px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}.sh:hover{background:rgba(255,255,255,.02)}
+.stl{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600}
+.si{width:18px;height:18px;color:var(--bl);flex-shrink:0}
+.schev{color:var(--tx2);transition:transform .2s}.schev.op{transform:rotate(180deg)}
+.sdiv{height:1px;background:var(--bd)}.sbody{padding:0 18px 16px}
+.fg2{display:grid;gap:10px}.c2{grid-template-columns:1fr 1fr}.c3{grid-template-columns:1fr 1fr 1fr}.c4{grid-template-columns:1fr 1fr 1fr 1fr}
+.sbar{display:flex;align-items:center;justify-content:space-between;background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:11px 18px;margin-bottom:14px}
+.sbl{display:flex;align-items:center;gap:7px}.sbr{display:flex;align-items:center;gap:8px}
+.chip{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.chip.gr{background:var(--bg4);color:var(--tx2)}.chip.gn{background:rgba(34,197,94,.13);color:var(--gn);border:1px solid rgba(34,197,94,.25)}
+.sortl{font-size:11px;color:var(--tx2)}
+.sortsel{background:var(--bg3);border:1px solid var(--bd);color:var(--tx);padding:5px 9px;border-radius:7px;font-size:11px;outline:none;cursor:pointer}
+.rcard{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;margin-bottom:9px;overflow:hidden;transition:border .15s}.rcard:hover{border-color:rgba(91,110,245,.5)}
+.rh{padding:13px 18px;display:flex;align-items:center;justify-content:space-between}
+.rname{font-size:14px;font-weight:700}.rscore{font-size:10px;color:var(--tx2);background:var(--bg4);padding:3px 8px;border-radius:5px}
+.rfields{padding:0 18px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.rfl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);margin-bottom:3px}
+.rfv{font-size:12px;color:var(--tx2)}.rfv.hl{color:var(--tx);background:rgba(91,110,245,.15);border-radius:4px;padding:1px 5px}
+.ract{padding:9px 18px;border-top:1px solid var(--bd);display:flex;gap:7px}
+.bdet{background:var(--bg3);border:1px solid var(--bd);color:var(--tx);padding:5px 11px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:500;transition:all .15s}.bdet:hover{border-color:var(--bl);color:var(--bl)}
+.bcopy{background:transparent;border:1px solid var(--bd);color:var(--tx2);padding:5px 11px;border-radius:7px;cursor:pointer;font-size:11px;transition:all .15s}.bcopy:hover{color:var(--tx);border-color:var(--tx2)}
+.nores{display:flex;align-items:center;justify-content:center;padding:60px;color:var(--tx2);font-size:13px}
+.pag{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:16px}
+.pb{background:var(--bg3);border:1px solid var(--bd);color:var(--tx2);width:32px;height:32px;border-radius:7px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}.pb:hover,.pb.act{background:var(--bl);border-color:var(--bl);color:#fff}
+.asec{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:22px;margin-bottom:12px}
+.atl{font-size:13px;font-weight:700;margin-bottom:16px}
+.dz{border:2px dashed var(--bd);border-radius:10px;padding:40px 20px;text-align:center;cursor:pointer;transition:border .15s}.dz:hover{border-color:var(--bl)}
+.dzt{font-size:13px;color:var(--tx2);margin-top:8px}
+.ptbl{width:100%;border-collapse:collapse;font-size:11px;margin-top:14px}
+.ptbl th{background:var(--bg3);color:var(--tx2);text-align:left;padding:7px 10px;border-bottom:1px solid var(--bd);font-size:10px;text-transform:uppercase}
+.ptbl td{padding:7px 10px;border-bottom:1px solid var(--bd);color:var(--tx)}.ptbl tr:hover td{background:rgba(255,255,255,.02)}
+.log{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--bd)}
+.ltime{font-size:10px;color:var(--tx3);min-width:130px}.luser{font-size:11px;font-weight:600;color:var(--bl);min-width:70px}
+.lact{font-size:11px;color:var(--tx2)}.lbadge{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;white-space:nowrap}
+.lb-s{background:rgba(91,110,245,.18);color:var(--bl)}.lb-l{background:rgba(34,197,94,.13);color:var(--gn)}.lb-a{background:rgba(139,92,246,.18);color:var(--pu)}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:1000}
+.mbox{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:28px;max-width:540px;width:90%;max-height:85vh;overflow-y:auto}
+.mtl{font-size:15px;font-weight:700;margin-bottom:16px}.mclose{float:right;background:none;border:none;color:var(--tx2);cursor:pointer;font-size:16px;margin-left:12px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.di label{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--tx3);letter-spacing:.07em;display:block;margin-bottom:4px}
+.di span{font-size:13px;color:var(--tx)}
+.hi{display:flex;align-items:flex-start;gap:9px;margin-bottom:11px}
+.hd{width:6px;height:6px;background:var(--bl);border-radius:50%;margin-top:6px;flex-shrink:0}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.statbox{background:var(--bg3);border-radius:8px;padding:14px;text-align:center}
+.statval{font-size:22px;font-weight:700}.hidden{display:none!important}
+@media(max-width:640px){.c2,.c3,.c4{grid-template-columns:1fr}.tbr .un,.tbr .ur{display:none}.dgrid{grid-template-columns:1fr}}
+</style></head><body>
+
+<div id="ls">
+<div class="lcard">
+  <div class="ltop">
+    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#5b6ef5" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <div class="ltitle">Système de Recherche</div>
+    <div class="lsub">Base de données interne — Accès restreint</div>
+  </div>
+  <div class="fg"><label class="fl">Identifiant</label><input type="text" id="lu" class="fi" placeholder="admin" autocomplete="off"></div>
+  <div class="fg"><label class="fl">Mot de passe</label><input type="password" id="lp" class="fi" placeholder="••••••••"></div>
+  <button class="bp" onclick="doLogin()">Se connecter</button>
+  <div class="lerr" id="lerr"></div>
+  <div class="demo-hint">Comptes démo : <strong>admin</strong> / admin123 &nbsp;·&nbsp; <strong>user</strong> / user123</div>
+</div></div>
+
+<div id="app">
+<div class="tb">
+  <div class="tbl">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5b6ef5" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span class="tbtl">Recherche</span>
+  </div>
+  <div class="tbr">
+    <button class="bh" onclick="showHelp()">?</button>
+    <button class="bc" onclick="clearForm()">Effacer</button>
+    <button class="bs" onclick="doSearch()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Rechercher
+    </button>
+    <div class="ub" onclick="showUserMenu()">
+      <div class="ua" id="uav">A</div>
+      <div><div class="un" id="udn">Admin</div><div class="ur" id="udr">Administrateur</div></div>
+    </div>
+  </div>
+</div>
+<div class="ntabs">
+  <div class="nt active" onclick="switchTab('search',this)">🔍 Recherche</div>
+  <div class="nt" onclick="switchTab('admin',this)" id="tab-adm">⚙️ Administration</div>
+  <div class="nt" onclick="switchTab('logs',this)" id="tab-log">📋 Audit</div>
+  <div class="nt" onclick="doLogout()" style="margin-left:auto">⏻ Déconnexion</div>
+</div>
+
+<div class="main">
+
+<!-- SEARCH -->
+<div id="ts">
+  <div class="sec">
+    <div class="sh" onclick="tog('id')">
+      <div class="stl"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg>Identité</div>
+      <svg class="schev op" id="chev-id" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+    </div><div class="sdiv"></div>
+    <div class="sbody" id="b-id"><div style="height:13px"></div>
+      <div class="fg2 c2">
+        <div><label class="fl">Nom</label><input type="text" id="fn" class="fi" placeholder="DUPONT"></div>
+        <div><label class="fl">Prénom</label><input type="text" id="fp" class="fi" placeholder="Jean"></div>
+      </div></div></div>
+
+  <div class="sec">
+    <div class="sh" onclick="tog('na')">
+      <div class="stl"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Naissance</div>
+      <svg class="schev op" id="chev-na" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+    </div><div class="sdiv"></div>
+    <div class="sbody" id="b-na"><div style="height:13px"></div>
+      <div class="fg2 c3">
+        <div><label class="fl">Date de naissance</label><input type="text" id="fd" class="fi" placeholder="1985-07-14"></div>
+        <div><label class="fl">Année de naissance</label><input type="text" id="fy" class="fi" placeholder="1985"></div>
+        <div><label class="fl">Lieu de naissance</label><input type="text" id="fl2" class="fi" placeholder="Paris"></div>
+      </div></div></div>
+
+  <div class="sec">
+    <div class="sh" onclick="tog('co')">
+      <div class="stl"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>Contact</div>
+      <svg class="schev op" id="chev-co" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+    </div><div class="sdiv"></div>
+    <div class="sbody" id="b-co"><div style="height:13px"></div>
+      <div class="fg2 c2">
+        <div><label class="fl">Téléphone</label><input type="text" id="ft" class="fi" placeholder="0612345678"></div>
+        <div><label class="fl">Email</label><input type="text" id="fe" class="fi" placeholder="jean@gmail.com"></div>
+      </div></div></div>
+
+  <div class="sec">
+    <div class="sh" onclick="tog('lo')">
+      <div class="stl"><svg class="si" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Localisation</div>
+      <svg class="schev op" id="chev-lo" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+    </div><div class="sdiv"></div>
+    <div class="sbody" id="b-lo"><div style="height:13px"></div>
+      <div class="fg2 c4">
+        <div><label class="fl">Ville</label><input type="text" id="fv" class="fi" placeholder="Paris"></div>
+        <div><label class="fl">Code postal</label><input type="text" id="fcp" class="fi" placeholder="75001"></div>
+        <div><label class="fl">Rue / Adresse</label><input type="text" id="fa" class="fi" placeholder="12 rue de la Paix"></div>
+        <div id="ip-wrap"><label class="fl">Adresse IP</label><input type="text" id="fip" class="fi" placeholder="192.168.1.1"></div>
+      </div></div></div>
+
+  <div class="sbar">
+    <div class="sbl">
+      <span class="chip gr" id="sbruts">0 bruts</span>
+      <span class="chip gn" id="sres">0 résultats</span>
+      <span class="chip gr" id="stime">— ms</span>
+    </div>
+    <div class="sbr">
+      <span class="sortl">Trier</span>
+      <select class="sortsel" id="sortsel" onchange="sortResults()">
+        <option value="p">Pertinence</option>
+        <option value="az">Nom A→Z</option>
+        <option value="za">Nom Z→A</option>
+        <option value="d">Date naiss.</option>
+      </select>
+    </div>
+  </div>
+  <div id="rarea">
+    <div class="nores hidden" id="nores">Aucun résultat.</div>
+    <div id="rlist"></div>
+    <div class="pag" id="pag"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="ta" class="hidden">
+  <div class="asec">
+    <div class="atl">📥 Importer un fichier TXT / CSV</div>
+    <div class="dz" onclick="document.getElementById('fi2').click()" id="dz">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5b6ef5" stroke-width="1.5" style="margin:0 auto"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div class="dzt">Glisser un fichier TXT/CSV ici ou <span style="color:var(--bl)">parcourir</span></div>
+      <div style="font-size:10px;color:var(--tx3);margin-top:5px">Séparateur auto-détecté : ; , | TAB</div>
+    </div>
+    <input type="file" id="fi2" accept=".txt,.csv" style="display:none" onchange="handleFile(event)">
+  </div>
+  <div class="asec hidden" id="iprev">
+    <div class="atl">🔍 Aperçu — Mapping des colonnes</div>
+    <div id="iprevcnt"></div>
+    <div style="margin-top:14px;display:flex;gap:8px">
+      <button class="bs" onclick="valImport()">✓ Valider l'import</button>
+      <button class="bc" onclick="cancelImport()">Annuler</button>
+    </div>
+  </div>
+  <div class="asec">
+    <div class="atl">🗄️ Base de données</div>
+    <div class="statgrid">
+      <div class="statbox"><div class="statval" style="color:var(--bl)" id="dbcnt">12</div><div style="font-size:11px;color:var(--tx2)">Enregistrements</div></div>
+      <div class="statbox"><div class="statval" style="color:var(--gn)">9</div><div style="font-size:11px;color:var(--tx2)">Colonnes indexées</div></div>
+      <div class="statbox"><div class="statval" style="color:var(--tx2);font-size:14px">Demo</div><div style="font-size:11px;color:var(--tx2)">Source</div></div>
+    </div>
+    <button class="bc" style="background:rgba(239,68,68,.08);border-color:var(--rd);color:var(--rd)" onclick="if(confirm('Supprimer définitivement toutes les données importées ?'))alert('Données supprimées.')">🗑️ Supprimer toutes les données</button>
+  </div>
+</div>
+
+<!-- LOGS -->
+<div id="tl" class="hidden">
+  <div class="asec"><div class="atl">📋 Journal d'audit</div><div id="llist"></div></div>
+</div>
+
+</div></div>
+
+<!-- DETAIL MODAL -->
+<div class="mo" id="dmod"><div class="mbox">
+  <button class="mclose" onclick="closeM('dmod')">✕</button>
+  <div class="mtl">Détails de l'enregistrement</div>
+  <div class="dgrid" id="dcnt"></div>
+</div></div>
+
+<!-- HELP MODAL -->
+<div class="mo" id="hmod"><div class="mbox">
+  <button class="mclose" onclick="closeM('hmod')">✕</button>
+  <div class="mtl">Aide</div>
+  <div class="hi"><div class="hd"></div><div><strong>Recherche partielle</strong> — "DUP" trouve "DUPONT"</div></div>
+  <div class="hi"><div class="hd"></div><div><strong>Insensible à la casse</strong> — "dupont" = "DUPONT"</div></div>
+  <div class="hi"><div class="hd"></div><div><strong>Accents gérés</strong> — "prenom" trouvera "prénom"</div></div>
+  <div class="hi"><div class="hd"></div><div><strong>Multicritères</strong> — Combinez nom + ville + email</div></div>
+  <div class="hi"><div class="hd"></div><div><strong>Score</strong> — Chaque résultat affiche son niveau de correspondance</div></div>
+  <div style="margin-top:14px;padding:10px 14px;background:rgba(91,110,245,.08);border-radius:8px;font-size:11px;color:var(--tx2)">⚠️ Toutes les recherches sont enregistrées dans le journal d'audit.</div>
+</div></div>
+
+<script>
+const DB=[
+  {id:1,nom:"DUPONT",prenom:"Jean",dob:"1985-07-14",annee:"1985",lieu:"Paris",tel:"0612345678",email:"jean.dupont@gmail.com",ville:"Paris",cp:"75001",adresse:"12 rue de la Paix",ip:"192.168.1.1"},
+  {id:2,nom:"DUPONT",prenom:"Marie",dob:"1990-03-22",annee:"1990",lieu:"Lyon",tel:"0698765432",email:"marie.dupont@yahoo.fr",ville:"Lyon",cp:"69001",adresse:"5 avenue Berthelot",ip:"10.0.0.2"},
+  {id:3,nom:"MARTIN",prenom:"Pierre",dob:"1978-11-05",annee:"1978",lieu:"Marseille",tel:"0645123456",email:"p.martin@outlook.fr",ville:"Marseille",cp:"13001",adresse:"8 bd Longchamp",ip:"172.16.0.5"},
+  {id:4,nom:"BERNARD",prenom:"Sophie",dob:"1995-06-18",annee:"1995",lieu:"Bordeaux",tel:"0712345678",email:"sophie.b@free.fr",ville:"Bordeaux",cp:"33000",adresse:"22 cours Victor Hugo",ip:"192.168.2.10"},
+  {id:5,nom:"THOMAS",prenom:"Lucas",dob:"2001-09-30",annee:"2001",lieu:"Nantes",tel:"0623456789",email:"lucas.thomas@proton.me",ville:"Nantes",cp:"44000",adresse:"3 rue de Strasbourg",ip:"10.0.1.15"},
+  {id:6,nom:"PETIT",prenom:"Claire",dob:"1982-12-01",annee:"1982",lieu:"Toulouse",tel:"0654321098",email:"claire.petit@sfr.fr",ville:"Toulouse",cp:"31000",adresse:"17 allée Jean Jaurès",ip:"192.168.3.4"},
+  {id:7,nom:"ROBERT",prenom:"Marc",dob:"1969-04-14",annee:"1969",lieu:"Strasbourg",tel:"0678901234",email:"marc.robert@orange.fr",ville:"Strasbourg",cp:"67000",adresse:"45 rue du Faubourg",ip:"172.16.1.20"},
+  {id:8,nom:"RICHARD",prenom:"Émilie",dob:"1988-08-25",annee:"1988",lieu:"Lille",tel:"0601234567",email:"emilie.richard@hotmail.fr",ville:"Lille",cp:"59000",adresse:"9 rue Gambetta",ip:"10.0.2.8"},
+  {id:9,nom:"DURAND",prenom:"Antoine",dob:"1975-02-10",annee:"1975",lieu:"Rennes",tel:"0667890123",email:"a.durand@laposte.net",ville:"Rennes",cp:"35000",adresse:"2 bd de la Liberté",ip:"192.168.4.1"},
+  {id:10,nom:"MOREAU",prenom:"Isabelle",dob:"1993-10-07",annee:"1993",lieu:"Nice",tel:"0689012345",email:"isabelle.moreau@gmail.com",ville:"Nice",cp:"06000",adresse:"33 prom. des Anglais",ip:"10.0.3.12"},
+  {id:11,nom:"LEROY",prenom:"François",dob:"1960-01-28",annee:"1960",lieu:"Tours",tel:"0634567890",email:"francois.leroy@wanadoo.fr",ville:"Tours",cp:"37000",adresse:"6 rue Nationale",ip:"172.16.2.3"},
+  {id:12,nom:"SIMON",prenom:"Chloé",dob:"1999-05-15",annee:"1999",lieu:"Montpellier",tel:"0712389012",email:"chloe.simon@gmail.com",ville:"Montpellier",cp:"34000",adresse:"14 place de la Comédie",ip:"192.168.5.7"},
+];
+const ACCS={admin:{pass:"admin123",role:"admin",disp:"Administrateur"},user:{pass:"user123",role:"user",disp:"Utilisateur"}};
+let CU=null,LOGS=[],SR=[],CP=1;const PP=5;
+
+function doLogin(){
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
+  const a=ACCS[u];
+  if(a&&a.pass===p){
+    CU={u,role:a.role,disp:a.disp};
+    document.getElementById('lerr').textContent='';
+    document.getElementById('ls').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.getElementById('uav').textContent=u[0].toUpperCase();
+    document.getElementById('udn').textContent=u;
+    document.getElementById('udr').textContent=a.disp;
+    if(a.role!=='admin'){
+      document.getElementById('tab-adm').classList.add('hidden');
+      document.getElementById('tab-log').classList.add('hidden');
+      document.getElementById('ip-wrap').classList.add('hidden');
+    }
+    addLog('l',u,'Connexion établie');
+  }else{document.getElementById('lerr').textContent='Identifiants incorrects.';}
+}
+function doLogout(){if(confirm('Se déconnecter ?')){addLog('l',CU.u,'Déconnexion');CU=null;document.getElementById('app').style.display='none';document.getElementById('ls').style.display='flex';document.getElementById('lu').value='';document.getElementById('lp').value='';}}
+
+function addLog(t,u,a){LOGS.unshift({t,u,a,dt:new Date()});renderLogs();}
+function renderLogs(){
+  const el=document.getElementById('llist');if(!el)return;
+  const map={s:'RECHERCHE lb-s',l:'ACCÈS lb-l',a:'ADMIN lb-a'};
+  el.innerHTML=LOGS.slice(0,60).map(l=>`<div class="log"><div class="ltime">${l.dt.toLocaleString('fr-FR')}</div><div class="luser">${l.u}</div><span class="lbadge ${map[l.t]||'lb-s'}">${(map[l.t]||'').split(' ')[0].replace('RECHERCHE','RECHERCHE').replace('ACCÈS','ACCÈS')}</span><div class="lact">${l.a}</div></div>`).join('')||'<div style="color:var(--tx2);font-size:12px;padding:16px 0">Aucun log.</div>';
+  // rewrite cleaner
+  el.innerHTML=LOGS.slice(0,60).map(l=>{
+    const badges={s:'<span class="lbadge lb-s">RECHERCHE</span>',l:'<span class="lbadge lb-l">ACCÈS</span>',a:'<span class="lbadge lb-a">ADMIN</span>'};
+    return`<div class="log"><div class="ltime">${l.dt.toLocaleString('fr-FR')}</div><div class="luser">${l.u}</div>${badges[l.t]||''}<div class="lact">${l.a}</div></div>`;
+  }).join('')||'<div style="color:var(--tx2);font-size:12px;padding:16px 0">Aucun log.</div>';
+}
+
+function tog(id){
+  const b=document.getElementById('b-'+id),c=document.getElementById('chev-'+id);
+  b.style.display=b.style.display==='none'?'':'none';
+  c.classList.toggle('op',b.style.display!=='none');
+}
+
+function switchTab(n,el){
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('active'));el.classList.add('active');
+  document.getElementById('ts').classList.toggle('hidden',n!=='search');
+  document.getElementById('ta').classList.toggle('hidden',n!=='admin');
+  document.getElementById('tl').classList.toggle('hidden',n!=='logs');
+  if(n==='logs')renderLogs();
+}
+
+function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();}
+function match(f,q){if(!q||!q.trim())return 0;const nf=norm(f),nq=norm(q);if(!nq)return 0;if(nf===nq)return 2;if(nf.includes(nq))return 1;return 0;}
+
+function doSearch(){
+  const t0=performance.now();
+  const c={nom:g('fn'),prenom:g('fp'),dob:g('fd'),annee:g('fy'),lieu:g('fl2'),tel:g('ft'),email:g('fe'),ville:g('fv'),cp:g('fcp'),adresse:g('fa'),ip:CU&&CU.role==='admin'?g('fip'):''};
+  if(!Object.values(c).some(v=>v.trim())){alert('Saisissez au moins un critère.');return;}
+  SR=DB.map(r=>{
+    let sc=0;const hl={};
+    for(const[k,v]of Object.entries(c)){if(!v.trim())continue;const s=match(r[k],v);if(s>0){sc+=s;hl[k]=true;}}
+    return{...r,sc,hl};
+  }).filter(r=>r.sc>0);
+  const el=Math.round(performance.now()-t0);CP=1;
+  const cv=Object.entries(c).filter(([,v])=>v.trim()).map(([k,v])=>`${k}="${v}"`).join(', ');
+  addLog('s',CU.u,`Recherche : ${cv} → ${SR.length} résultat(s)`);
+  document.getElementById('sbruts').textContent=DB.length+' bruts';
+  document.getElementById('sres').textContent=SR.length+' résultats';
+  document.getElementById('stime').textContent=el+' ms';
+  sortResults();
+}
+function g(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+
+function sortResults(){
+  const s=document.getElementById('sortsel').value;
+  let a=[...SR];
+  if(s==='az')a.sort((x,y)=>x.nom.localeCompare(y.nom));
+  else if(s==='za')a.sort((x,y)=>y.nom.localeCompare(x.nom));
+  else if(s==='d')a.sort((x,y)=>x.dob.localeCompare(y.dob));
+  else a.sort((x,y)=>y.sc-x.sc);
+  renderResults(a);
+}
+
+function renderResults(arr){
+  const list=document.getElementById('rlist'),no=document.getElementById('nores'),pag=document.getElementById('pag');
+  if(!arr.length){list.innerHTML='';no.classList.remove('hidden');pag.innerHTML='';return;}
+  no.classList.add('hidden');
+  const pg=arr.slice((CP-1)*PP,CP*PP);
+  const scCol=s=>s>=4?'var(--gn)':s>=2?'var(--bl)':'var(--tx2)';
+  list.innerHTML=pg.map(r=>`
+  <div class="rcard">
+    <div class="rh"><div class="rname">${r.nom} ${r.prenom}</div><span class="rscore" style="color:${scCol(r.sc)}">Score : ${r.sc}</span></div>
+    <div class="rfields">
+      ${rf('Date naiss.',r.dob,r.hl.dob||r.hl.annee)}
+      ${rf('Lieu naiss.',r.lieu,r.hl.lieu)}
+      ${rf('Téléphone',r.tel,r.hl.tel)}
+      ${rf('Email',r.email,r.hl.email)}
+      ${rf('Ville',r.ville,r.hl.ville)}
+      ${rf('Code postal',r.cp,r.hl.cp)}
+      ${rf('Adresse',r.adresse,r.hl.adresse)}
+      ${CU&&CU.role==='admin'?rf('IP',r.ip,r.hl.ip):''}
+    </div>
+    <div class="ract">
+      <button class="bdet" onclick="showDet(${r.id})">👁 Voir les détails</button>
+      <button class="bcopy" onclick="copyRec(${r.id})">📋 Copier</button>
+    </div>
+  </div>`).join('');
+  const tot=Math.ceil(arr.length/PP);pag.innerHTML='';
+  if(tot>1)for(let i=1;i<=tot;i++){const b=document.createElement('button');b.className='pb'+(i===CP?' act':'');b.textContent=i;b.onclick=(()=>{const p=i;return()=>{CP=p;sortResults();}})();pag.appendChild(b);}
+}
+function rf(l,v,hl){return`<div><div class="rfl">${l}</div><div class="rfv${hl?' hl':''}">${v||'—'}</div></div>`;}
+
+function showDet(id){
+  const r=DB.find(x=>x.id===id);if(!r)return;
+  const fields=[['Nom',r.nom],['Prénom',r.prenom],['Date naiss.',r.dob],['Année',r.annee],['Lieu naiss.',r.lieu],['Téléphone',r.tel],['Email',r.email],['Ville',r.ville],['Code postal',r.cp],['Adresse',r.adresse],...(CU&&CU.role==='admin'?[['Adresse IP',r.ip]]:[])];
+  document.getElementById('dcnt').innerHTML=fields.map(([l,v])=>`<div class="di"><label>${l}</label><span>${v||'—'}</span></div>`).join('');
+  document.getElementById('dmod').style.display='flex';
+  addLog('s',CU.u,`Consultation fiche #${id} — ${r.nom} ${r.prenom}`);
+}
+function closeM(id){document.getElementById(id).style.display='none';}
+['dmod','hmod'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeM(id);}));
+
+function copyRec(id){
+  const r=DB.find(x=>x.id===id);if(!r)return;
+  const txt=Object.entries(r).filter(([k])=>k!=='id'&&(CU.role==='admin'||k!=='ip')).map(([k,v])=>`${k}: ${v}`).join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{const el=event.target;el.textContent='✓ Copié';setTimeout(()=>el.textContent='📋 Copier',1500);});
+}
+
+function clearForm(){
+  ['fn','fp','fd','fy','fl2','ft','fe','fv','fcp','fa','fip'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('rlist').innerHTML='';document.getElementById('nores').classList.add('hidden');
+  document.getElementById('sbruts').textContent='0 bruts';document.getElementById('sres').textContent='0 résultats';document.getElementById('stime').textContent='— ms';
+  document.getElementById('pag').innerHTML='';SR=[];
+}
+
+function handleFile(e){
+  const f=e.target.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const txt=ev.target.result,lines=txt.split('\n').filter(l=>l.trim());
+    if(!lines.length)return;
+    const sep=[';',',','|','\t'].find(s=>lines[0].includes(s))||';';
+    const heads=lines[0].split(sep).map(h=>h.trim());
+    const prev=lines.slice(1,6);
+    document.getElementById('iprev').classList.remove('hidden');
+    const MAP_OPTS=['— Ignorer —','nom','prenom','dob','annee','lieu','tel','email','ville','cp','adresse','ip'];
+    const autoMap=h=>{const n=norm(h);if(n.includes('nom'))return'nom';if(n.includes('prenom'))return'prenom';if(n.includes('naiss'))return'dob';if(n.includes('tel')||n.includes('phone'))return'tel';if(n.includes('mail'))return'email';if(n.includes('ville')||n.includes('city'))return'ville';if(n.includes('postal')||n.includes('cp'))return'cp';return'— Ignorer —';};
+    document.getElementById('iprevcnt').innerHTML=`
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:10px">Séparateur : <strong style="color:var(--bl)">"${sep}"</strong> · <strong style="color:var(--tx)">${lines.length-1}</strong> enregistrements · <strong style="color:var(--tx)">${heads.length}</strong> colonnes</div>
+      <div style="overflow-x:auto"><table class="ptbl"><thead><tr>${heads.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>${prev.map(l=>`<tr>${l.split(sep).map(c=>`<td>${c.trim()}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      <div style="margin-top:12px;font-size:11px;color:var(--tx2);margin-bottom:8px">Mapping des colonnes :</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px">
+      ${heads.map(h=>`<div style="background:var(--bg3);padding:8px 10px;border-radius:7px">
+        <div style="color:var(--tx3);font-size:9px;text-transform:uppercase;margin-bottom:5px">${h}</div>
+        <select style="width:100%;background:var(--bg4);border:1px solid var(--bd);color:var(--tx);border-radius:5px;padding:4px;font-size:11px">
+          ${MAP_OPTS.map(o=>`<option${o===autoMap(h)?' selected':''}>${o}</option>`).join('')}
+        </select></div>`).join('')}</div>`;
+    addLog('a',CU.u,`Import fichier : ${f.name} (${lines.length-1} lignes, sep "${sep}")`);
+  };
+  reader.readAsText(f,'utf-8');
+}
+function valImport(){document.getElementById('dbcnt').textContent='✓';document.getElementById('iprev').classList.add('hidden');document.getElementById('fi2').value='';addLog('a',CU.u,'Import validé et indexé');alert('Import validé. Données indexées.');}
+function cancelImport(){document.getElementById('iprev').classList.add('hidden');document.getElementById('fi2').value='';}
+
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--bl)';});
+dz.addEventListener('dragleave',()=>dz.style.borderColor='');
+dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('fi2').files=dt.files;handleFile({target:{files:dt.files}});}});
+
+function showHelp(){document.getElementById('hmod').style.display='flex';}
+function showUserMenu(){if(confirm(`Connecté : ${CU.disp}\nSe déconnecter ?`))doLogout();}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    if(document.getElementById('ls').style.display!=='none')doLogin();
+    else if(!document.getElementById('app').classList.contains('hidden'))doSearch();
+  }
+  if(e.key==='Escape'){closeM('dmod');closeM('hmod');}
+});
+</script></body></html>
